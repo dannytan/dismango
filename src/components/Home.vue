@@ -1,7 +1,7 @@
 <template>
   <v-container fluid>
     <v-layout row>
-      <v-flex x12>{{results}}</v-flex>
+      <v-flex x12><pre>{{results}}</pre></v-flex>
     </v-layout>
   </v-container>
 </template>
