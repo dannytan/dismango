@@ -50,7 +50,7 @@
       }
     },
     methods: {
-      process() {
+      processImage() {
         axios.post(
           `https://vision.googleapis.com/v1/images:annotate?key=${this.apiKey}`,
           this.data).then(response => {
@@ -62,7 +62,7 @@
       setImageContent(file) {
         let base64 = file.base64;
         this.data.requests[0].image.content = base64.replace("data:image/png;base64,", "");
-        this.process();
+        this.processImage();
       },
       listenForSpeechEvents () {
         this.utterThis.onstart = () => {
