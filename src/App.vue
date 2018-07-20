@@ -3,16 +3,19 @@
     <!--<img src="./assets/logo.png">
     <router-view></router-view>-->
     <home></home>
+    <text-to-speech></text-to-speech>
   </div>
 </template>
 
 <script>
   import Home from './components/Home';
+  import TextToSpeech from './components/TextToSpeech';
 
   export default {
     name: 'App',
     components: {
-        Home
+        Home,
+        TextToSpeech
     }
   }
 </script>
