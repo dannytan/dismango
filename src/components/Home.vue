@@ -1,6 +1,6 @@
 <template>
   <v-container fluid>
-    <h1>TsK</h1>
+    <!--<h1>TsK</h1>-->
     <v-layout row>
       <file-base64
         v-bind:multiple="false"
@@ -11,7 +11,6 @@
       {{result}}
     </v-layout>
     <v-layout row>
-      <v-btn @click="read">Read</v-btn>
       <v-btn @click="pause">Pause</v-btn>
       <v-btn @click="play">Play</v-btn>
       <v-btn @click="cancel">Cancel</v-btn>
@@ -78,13 +77,12 @@
       filterText(str) {
         return str.replace(/- /g, '');
       },
-
-      read () {
+      read() {
         //console.log("Rate: " + this.utterThis.rate + ", Pitch: " + this.utterThis.pitch);
-        this.exampleText = this.filterText(this.exampleText);
-        this.utterThis.text = `${this.exampleText}`;
-        this.utterThis.voice = this.voiceList[this.selectedVoice]
-        this.synth.speak(this.utterThis)
+        this.result = this.filterText(this.result);
+        this.utterThis.text = this.result;
+        this.utterThis.voice = this.voiceList[this.selectedVoice];
+        this.synth.speak(this.utterThis);
       },
       pause() {
         console.log("paused");
@@ -97,23 +95,31 @@
       cancel() {
         console.log("cancel");
         this.synth.cancel();
+        this.result = null;
       },
-      mounted () {
-        //speechSynthesis.speak(new SpeechSynthesisUtterance("Check check one two."));
+    },
+    mounted () {
+      //speechSynthesis.speak(new SpeechSynthesisUtterance("Check check one two."));
 
+      this.voiceList = this.synth.getVoices();
+      if (this.voiceList.length) {
+        this.isLoading = false
+      }
+      this.synth.onvoiceschanged = () => {
         this.voiceList = this.synth.getVoices();
-        if (this.voiceList.length) {
+        setTimeout(() => {
           this.isLoading = false
-        }
-        this.synth.onvoiceschanged = () => {
-          this.voiceList = this.synth.getVoices();
-          setTimeout(() => {
-            this.isLoading = false
-          }, 800)
-        };
+        }, 800)
+      };
 
-        this.listenForSpeechEvents();
-      },
+      this.listenForSpeechEvents();
+    },
+    watch: {
+      result() {
+        if(this.result){
+          this.read();
+        }
+      }
     }
   }
 
