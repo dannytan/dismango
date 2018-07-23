@@ -6,6 +6,11 @@
         v-bind:multiple="false"
         v-bind:done="setImageContent">
       </file-base64>
+      <input type="file"
+             ref="image"
+             accept="image/*"
+             multiple="true"
+             @change="processImages"/>
     </v-layout>
     <v-layout row>
       {{result}}
@@ -31,14 +36,7 @@
         result: null,
         apiKey: 'AIzaSyAGlHsVmC_099jrau67fglMExpEnuG4Cds',
         data: {
-          "requests": [{
-            "features": [{
-              "type": 'DOCUMENT_TEXT_DETECTION'
-            }],
-            "image": {
-              "content": null
-            }
-          }]
+          "requests": []
         },
         exampleText: "Having clarified my vantage point, I make a statement of the obvious- that views held by those in dominant positions about their subordinates could have significant consequences for people's self-image and for the ways they cope with their situations. Such views, which are often deroga- tory and belittling, are integral to most relationships of dominance and subordination, wherein superiors behave in ways or say things that are accepted by their inferiors, who in turn behave in ways that serve to per- petuate the relationships. In Oceania, derogatory and belittling views of indigenous cultures are traceable to the early years of interactions with Europeans. The wholesale condemnation by Christian missionaries of Oceanic cultures as savage, lascivious, and barbaric has had a lasting and negative effect on people's views of their histories and traditions. In a number of Pacific societies peo- ple still divide their history into two parts: the era of darkness associated with savagery and barbarism; and the era of light and civilization ushered in by Christianity.",
         isLoading: true,
@@ -46,10 +44,32 @@
         selectedVoice: 0,
         synth: window.speechSynthesis,
         voiceList: [],
-        utterThis: new window.SpeechSynthesisUtterance()
+        utterThis: new window.SpeechSynthesisUtterance(),
+        base64: null
       }
     },
     methods: {
+      processImages(e) {
+        const files = e.target.files;
+        let imgFiles = [];
+        let pending = 0;
+        for (let i = 0; i < files.length; i++) {
+          let file = files[i];
+          const fr = new FileReader();
+          if (file !== undefined) {
+            fr.readAsDataURL(file);
+            fr.addEventListener('load', () => {
+              imgFiles.push(this.convertToBase64(fr.result, file.type));
+              --pending;
+              if(pending === 0) {
+                this.buildRequests(imgFiles);
+              }
+            });
+          }
+          ++pending;
+        }
+
+      },
       processImage() {
         axios.post(
           `https://vision.googleapis.com/v1/images:annotate?key=${this.apiKey}`,
@@ -59,10 +79,46 @@
           console.error(error);
         })
       },
+      //currently supports png and jpeg, can add more later
+      convertToBase64(str, fileType){
+        if (fileType === 'image/png') {
+          return str.replace("data:image/png;base64,", "");
+        } else if (fileType === 'image/jpeg') {
+          return str.replace("data:image/jpeg;base64,", "");
+        }
+      },
+      buildRequests(images) {
+        let request = {
+          "features": [{
+            "type": 'DOCUMENT_TEXT_DETECTION'
+          }],
+          "image": {
+            "content": null
+          }
+        };
+        for(let i = 0; i < images.length; i++) {
+          request.image.content = images[i];
+          this.data.requests.push(request);
+        }
+      },
       setImageContent(file) {
-        let base64 = file.base64;
-        this.data.requests[0].image.content = base64.replace("data:image/png;base64,", "");
-        this.processImage();
+
+        let fileReader = new FileReader();
+        let base64;
+        // Onload of file read the file content
+        fileReader.onload = function (fileLoadedEvent) {
+          console.log(fileLoadedEvent);
+          base64 = fileLoadedEvent.target.result;
+          // Print data in console
+          console.log(base64);
+        };
+        // Convert data to base64
+        //fileReader.readAsDataURL(file);
+
+
+        /* let base64 = file.base64;
+         this.data.requests[0].image.content = base64.replace("data:image/png;base64,", "");*/
+        //this.processImage();
       },
       listenForSpeechEvents () {
         this.utterThis.onstart = () => {
@@ -116,7 +172,7 @@
     },
     watch: {
       result() {
-        if(this.result){
+        if (this.result) {
           this.read();
         }
       }
