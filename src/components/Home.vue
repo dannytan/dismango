@@ -2,10 +2,10 @@
   <v-container fluid>
     <!--<h1>TsK</h1>-->
     <v-layout row>
-      <file-base64
+      <!--<file-base64
         v-bind:multiple="false"
         v-bind:done="setImageContent">
-      </file-base64>
+      </file-base64>-->
       <input type="file"
              ref="image"
              accept="image/*"
@@ -13,7 +13,7 @@
              @change="processImages"/>
     </v-layout>
     <v-layout row>
-      {{result}}
+      {{ filteredText }}
     </v-layout>
     <v-layout row>
       <v-btn @click="pause">Pause</v-btn>
@@ -46,7 +46,9 @@
         voiceList: [],
         utterThis: new window.SpeechSynthesisUtterance(),
         base64: null,
-        allImgFiles: []
+        allImgFiles: [],
+        convertedText: '',
+        filteredText: null
       }
     },
     methods: {
@@ -69,7 +71,7 @@
               };
 
               imgFiles.push(fileInfo);
-              
+
               let request = {
                 "features": [{
                   "type": 'DOCUMENT_TEXT_DETECTION'
@@ -92,7 +94,10 @@
           `https://vision.googleapis.com/v1/images:annotate?key=${this.apiKey}`,
           this.data).then(response => {
           this.result = response.data.responses;
-          //this.result = response.data.responses[0].textAnnotations[0].description;
+          for (let i = 0; i < this.result.length; i++) {
+            this.convertedText += this.result[i].textAnnotations[0].description + " ";
+          }
+          this.filteredText = this.filterText(this.convertedText);
         }).catch(error => {
           console.error(error);
         })
@@ -110,27 +115,27 @@
           this.data.requests[i].image.content = images[i].base64;
         }
 
-        //this.convertToText();
+        this.convertToText();
       },
-      setImageContent(file) {
+      /*setImageContent(file) {
 
-        let fileReader = new FileReader();
-        let base64;
-        // Onload of file read the file content
-        fileReader.onload = function (fileLoadedEvent) {
-          console.log(fileLoadedEvent);
-          base64 = fileLoadedEvent.target.result;
-          // Print data in console
-          console.log(base64);
-        };
-        // Convert data to base64
-        //fileReader.readAsDataURL(file);
+       let fileReader = new FileReader();
+       let base64;
+       // Onload of file read the file content
+       fileReader.onload = function (fileLoadedEvent) {
+       console.log(fileLoadedEvent);
+       base64 = fileLoadedEvent.target.result;
+       // Print data in console
+       console.log(base64);
+       };
+       // Convert data to base64
+       //fileReader.readAsDataURL(file);
 
 
-        /* let base64 = file.base64;
-         this.data.requests[0].image.content = base64.replace("data:image/png;base64,", "");*/
-        //this.processImage();
-      },
+       let base64 = file.base64;
+       this.data.requests[0].image.content = base64.replace("data:image/png;base64,", "");
+       this.processImage();
+       },*/
       listenForSpeechEvents () {
         this.utterThis.onstart = () => {
           this.isLoading = true
@@ -140,14 +145,12 @@
           this.isLoading = false
         }
       },
-
       filterText(str) {
-        return str.replace(/- /g, '');
+        return str.replace(/(?:-\n|- )/g, '');
       },
       read() {
         //console.log("Rate: " + this.utterThis.rate + ", Pitch: " + this.utterThis.pitch);
-        this.result = this.filterText(this.result);
-        this.utterThis.text = this.result;
+        this.utterThis.text = this.filteredText;
         this.utterThis.voice = this.voiceList[this.selectedVoice];
         this.synth.speak(this.utterThis);
       },
@@ -166,7 +169,7 @@
       },
     },
     mounted () {
-      //speechSynthesis.speak(new SpeechSynthesisUtterance("Check check one two."));
+      speechSynthesis.speak(new SpeechSynthesisUtterance("Check check one two."));
 
       this.voiceList = this.synth.getVoices();
       if (this.voiceList.length) {
@@ -185,8 +188,8 @@
       allImgFiles() {
         this.buildRequests(this.allImgFiles);
       },
-      result() {
-        if (this.result) {
+      filteredText() {
+        if (this.filteredText) {
           this.read();
         }
       }
