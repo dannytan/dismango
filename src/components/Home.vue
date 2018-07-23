@@ -45,36 +45,54 @@
         synth: window.speechSynthesis,
         voiceList: [],
         utterThis: new window.SpeechSynthesisUtterance(),
-        base64: null
+        base64: null,
+        allImgFiles: []
       }
     },
     methods: {
       processImages(e) {
         const files = e.target.files;
         let imgFiles = [];
-        let pending = 0;
         for (let i = 0; i < files.length; i++) {
           let file = files[i];
           const fr = new FileReader();
           if (file !== undefined) {
             fr.readAsDataURL(file);
-            fr.addEventListener('load', () => {
-              imgFiles.push(this.convertToBase64(fr.result, file.type));
-              --pending;
-              if(pending === 0) {
-                this.buildRequests(imgFiles);
-              }
-            });
-          }
-          ++pending;
-        }
 
+            fr.onload = () => {
+              let fileInfo = {
+                name: file.name,
+                type: file.type,
+                size: Math.round(file.size / 1000) + ' kB',
+                base64: this.convertToBase64(fr.result, file.type),
+                file: file
+              };
+
+              imgFiles.push(fileInfo);
+              
+              let request = {
+                "features": [{
+                  "type": 'DOCUMENT_TEXT_DETECTION'
+                }],
+                "image": {
+                  "content": null
+                }
+              };
+              this.data.requests.push(request);
+
+              if (imgFiles.length === files.length) {
+                this.allImgFiles = imgFiles;
+              }
+            }
+          }
+        }
       },
-      processImage() {
+      convertToText() {
         axios.post(
           `https://vision.googleapis.com/v1/images:annotate?key=${this.apiKey}`,
           this.data).then(response => {
-          this.result = response.data.responses[0].textAnnotations[0].description;
+          this.result = response.data.responses;
+          //this.result = response.data.responses[0].textAnnotations[0].description;
         }).catch(error => {
           console.error(error);
         })
@@ -88,18 +106,11 @@
         }
       },
       buildRequests(images) {
-        let request = {
-          "features": [{
-            "type": 'DOCUMENT_TEXT_DETECTION'
-          }],
-          "image": {
-            "content": null
-          }
-        };
-        for(let i = 0; i < images.length; i++) {
-          request.image.content = images[i];
-          this.data.requests.push(request);
+        for (let i = 0; i < images.length; i++) {
+          this.data.requests[i].image.content = images[i].base64;
         }
+
+        //this.convertToText();
       },
       setImageContent(file) {
 
@@ -171,6 +182,9 @@
       this.listenForSpeechEvents();
     },
     watch: {
+      allImgFiles() {
+        this.buildRequests(this.allImgFiles);
+      },
       result() {
         if (this.result) {
           this.read();
