@@ -16,13 +16,36 @@
       <v-btn @click="play">Play</v-btn>
       <v-btn @click="cancel">Cancel</v-btn>
     </v-layout>
+
+    <div class="root" v-if="allImgFiles.length > 0">
+      <SortableList lockAxis="y" v-model="allImgFiles">
+        <SortableItem v-for="(file, index) in allImgFiles" :index="index" :key="index"
+                      :item="file.name"></SortableItem>
+      </SortableList>
+    </div>
   </v-container>
 </template>
 
 <script>
   import axios from 'axios'
+  import {ContainerMixin, ElementMixin} from 'vue-slicksort';
+
+  const SortableList = {
+    mixins: [ContainerMixin],
+    template: `<ul class="list"><slot /></ul>`,
+  };
+
+  const SortableItem = {
+    mixins: [ElementMixin],
+    props: ['item'],
+    template: `<li class="list-item">{{item}}</li>`,
+  };
 
   export default {
+    components: {
+      SortableList,
+      SortableItem
+    },
     data() {
       return {
         result: null,
@@ -39,7 +62,7 @@
         base64: null,
         allImgFiles: [],
         convertedText: '',
-        filteredText: null
+        filteredText: null,
       }
     },
     methods: {
