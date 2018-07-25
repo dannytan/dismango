@@ -40,12 +40,14 @@
       {{ filteredText }}
     </v-layout>
 
-    <div class="root" v-if="allImgFiles.length > 0">
-      <SortableList lockAxis="y" v-model="allImgFiles">
-        <SortableItem v-for="(file, index) in allImgFiles" :index="index" :key="index"
-                      :item="file.name"></SortableItem>
-      </SortableList>
-    </div>
+    <v-layout justify-center>
+      <div v-if="allImgFiles.length > 0">
+        <SortableList lockAxis="y" v-model="allImgFiles">
+          <SortableItem v-for="(file, index) in allImgFiles" :index="index" :key="index"
+                        :item="file.name"></SortableItem>
+        </SortableList>
+      </div>
+    </v-layout>
   </v-container>
 </template>
 
@@ -55,13 +57,14 @@
 
   const SortableList = {
     mixins: [ContainerMixin],
-    template: `<v-list><slot /></v-list>`,
+    template: `<v-list class="file-list"><slot /></v-list>`,
   };
 
   const SortableItem = {
     mixins: [ElementMixin],
     props: ['item'],
-    template: `<v-list-tile><v-list-tile-content><v-list-tile-title v-text="item"></v-list-tile-title></v-list-tile-content></v-list-tile>`,
+    template: `<v-list-tile
+class="file-item"><v-list-tile-content><v-list-tile-title v-text="item"></v-list-tile-title></v-list-tile-content></v-list-tile>`,
   };
 
   export default {
@@ -315,6 +318,16 @@
     height: 75px;
     border: 1px solid #323a44;
     margin: 10px 5px 0 0;
+  }
+
+
+  // File List Styles
+  div.v-list.file-list {
+    padding: 0;
+    margin-top: 30px;
+  }
+  div.file-item {
+    border: 1px solid #DADFE3;
   }
 
 </style>
