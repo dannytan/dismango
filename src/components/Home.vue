@@ -8,7 +8,7 @@
       <v-btn @click="cancel">Cancel</v-btn>
     </v-layout>
 
-    <v-jumbotron :color="transparent">
+    <v-jumbotron>
       <v-container fill-height>
         <v-layout align-center>
           <v-flex text-xs-center>
@@ -123,7 +123,7 @@ class="file-item"><v-list-tile-content><v-list-tile-title v-text="item"></v-list
               this.data.requests.push(request);
 
               if (imgFiles.length === files.length) {
-                this.allImgFiles = imgFiles;
+                this.allImgFiles = this.allImgFiles.concat(imgFiles);
               }
             }
           }
@@ -152,10 +152,14 @@ class="file-item"><v-list-tile-content><v-list-tile-title v-text="item"></v-list
         }
       },
       buildRequests(images) {
-        for (let i = 0; i < images.length; i++) {
-          this.data.requests[i].image.content = images[i].base64;
+        if(images){
+          for (let i = 0; i < images.length; i++) {
+            this.data.requests[i].image.content = images[i].base64;
+          }
+        } else {
+            this.data.requests = null;
         }
-
+        
         // TODO - Uncomment to run conversion
         //this.convertToText();
       },
@@ -279,8 +283,8 @@ class="file-item"><v-list-tile-content><v-list-tile-title v-text="item"></v-list
 
   .drop .cont i {
     font-size: 500%;
-    color: #8E99A5;
     position: relative;
+    color: #13546C;
   }
 
   .drop .cont .tit {
