@@ -1,9 +1,7 @@
 <template>
   <v-container fluid>
     <!--<h1>TiSK</h1>-->
-
     <v-layout row>
-      <div class="wrapper">
         <div class="drop">
           <div class="cont">
             <!--<v-icon>cloud_upload</v-icon>-->
@@ -17,17 +15,12 @@
               click here to browse
             </div>
           </div>
-          <input id="files" multiple="true" name="files[]" type="file" />
+          <input id="files"
+                 multiple="true"
+                 type="file"
+                 accept="image/*"
+                 @change="processImages"/>
         </div>
-      </div>
-    </v-layout>
-
-    <!--<v-layout row>
-      <input type="file"
-             ref="image"
-             accept="image/*"
-             multiple="true"
-             @change="processImages"/>
     </v-layout>
     <v-layout row>
       {{ filteredText }}
@@ -36,7 +29,7 @@
       <v-btn @click="pause">Pause</v-btn>
       <v-btn @click="play">Play</v-btn>
       <v-btn @click="cancel">Cancel</v-btn>
-    </v-layout>-->
+    </v-layout>
 
     <div class="root" v-if="allImgFiles.length > 0">
       <SortableList lockAxis="y" v-model="allImgFiles">
@@ -249,14 +242,9 @@
     outline: none;
   }
 
-  .wrapper {
-    width: 100%;
-    height: 100%;
-  }
-
   .drop {
-    width: 96%;
-    height: 96%;
+    width: 95%;
+    height: 50%;
     border: 3px dashed #DADFE3;
     border-radius: 15px;
     overflow: hidden;
@@ -265,7 +253,7 @@
     -webkit-transition: all 0.5s ease-out;
     -moz-transition: all 0.5s ease-out;
     transition: all 0.5s ease-out;
-    margin: auto;
+    margin: 50px auto;
     position: absolute;
     top: 0;
     left: 0;
