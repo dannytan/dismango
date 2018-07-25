@@ -14,12 +14,12 @@
           <v-flex text-xs-center>
             <div class="drop">
               <div class="cont">
-                <!--<v-icon>cloud_upload</v-icon>-->
+                <v-icon>cloud_upload</v-icon>
                 <div class="tit">
                   Drag & Drop
                 </div>
                 <div class="desc">
-                  your files to Assets, or
+                  your files, or
                 </div>
                 <div class="browse">
                   click here to browse
@@ -261,7 +261,7 @@
 
   .drop .cont {
     width: 500px;
-    height: 170px;
+    height: 230px;
     color: #8E99A5;
     -webkit-transition: all 0.5s ease-out;
     -moz-transition: all 0.5s ease-out;
@@ -275,7 +275,7 @@
   }
 
   .drop .cont i {
-    font-size: 400%;
+    font-size: 500%;
     color: #8E99A5;
     position: relative;
   }
