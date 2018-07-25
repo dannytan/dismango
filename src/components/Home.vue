@@ -55,13 +55,13 @@
 
   const SortableList = {
     mixins: [ContainerMixin],
-    template: `<ul class="list"><slot /></ul>`,
+    template: `<v-list><slot /></v-list>`,
   };
 
   const SortableItem = {
     mixins: [ElementMixin],
     props: ['item'],
-    template: `<li class="list-item">{{item}}</li>`,
+    template: `<v-list-tile><v-list-tile-content><v-list-tile-title v-text="item"></v-list-tile-title></v-list-tile-content></v-list-tile>`,
   };
 
   export default {
@@ -294,7 +294,7 @@
     color: white;
     padding: 8px 16px;
     border-radius: 5px;
-    background: #09f;
+    background: #13546C;
   }
 
   .drop input {
