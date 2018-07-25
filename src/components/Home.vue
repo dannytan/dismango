@@ -1,7 +1,28 @@
 <template>
   <v-container fluid>
     <!--<h1>TiSK</h1>-->
+
     <v-layout row>
+      <div class="wrapper">
+        <div class="drop">
+          <div class="cont">
+            <!--<v-icon>cloud_upload</v-icon>-->
+            <div class="tit">
+              Drag & Drop
+            </div>
+            <div class="desc">
+              your files to Assets, or
+            </div>
+            <div class="browse">
+              click here to browse
+            </div>
+          </div>
+          <input id="files" multiple="true" name="files[]" type="file" />
+        </div>
+      </div>
+    </v-layout>
+
+    <!--<v-layout row>
       <input type="file"
              ref="image"
              accept="image/*"
@@ -15,7 +36,7 @@
       <v-btn @click="pause">Pause</v-btn>
       <v-btn @click="play">Play</v-btn>
       <v-btn @click="cancel">Cancel</v-btn>
-    </v-layout>
+    </v-layout>-->
 
     <div class="root" v-if="allImgFiles.length > 0">
       <SortableList lockAxis="y" v-model="allImgFiles">
@@ -196,5 +217,114 @@
 </script>
 
 <style scoped type="text/scss" lang="scss">
+  // TODO - Move styles to separate file
+  @import url(https://fonts.googleapis.com/css?family=Montserrat:400,700);
+  *,
+  *:before,
+  *:after {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+  }
+
+  body,
+  html {
+    font-family: "Montserrat", sans-serif;
+    font-size: 100%;
+    font-weight: 400;
+    background: white;
+    color: #323a44;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  input:focus,
+  select:focus,
+  textarea:focus,
+  button:focus {
+    outline: none;
+  }
+
+  .wrapper {
+    width: 100%;
+    height: 100%;
+  }
+
+  .drop {
+    width: 96%;
+    height: 96%;
+    border: 3px dashed #DADFE3;
+    border-radius: 15px;
+    overflow: hidden;
+    text-align: center;
+    background: white;
+    -webkit-transition: all 0.5s ease-out;
+    -moz-transition: all 0.5s ease-out;
+    transition: all 0.5s ease-out;
+    margin: auto;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    /*&:hover
+     * cursor: pointer
+     * background: #f5f5f5 */
+  }
+  .drop .cont {
+    width: 500px;
+    height: 170px;
+    color: #8E99A5;
+    -webkit-transition: all 0.5s ease-out;
+    -moz-transition: all 0.5s ease-out;
+    transition: all 0.5s ease-out;
+    margin: auto;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+  }
+  .drop .cont i {
+    font-size: 400%;
+    color: #8E99A5;
+    position: relative;
+  }
+  .drop .cont .tit {
+    font-size: 400%;
+    text-transform: uppercase;
+  }
+  .drop .cont .desc {
+    color: #A4AEBB;
+  }
+  .drop .cont .browse {
+    margin: 10px 25%;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 5px;
+    background: #09f;
+  }
+  .drop input {
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    background: red;
+    opacity: 0;
+    margin: auto;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+  }
+  .drop .thumb {
+    height: 75px;
+    border: 1px solid #323a44;
+    margin: 10px 5px 0 0;
+  }
 
 </style>
