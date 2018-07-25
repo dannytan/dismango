@@ -1,7 +1,13 @@
 <template>
   <v-container fluid>
     <!--<h1>TiSK</h1>-->
-    
+
+    <v-layout row justify-center>
+      <v-btn @click="pause">Pause</v-btn>
+      <v-btn @click="play">Play</v-btn>
+      <v-btn @click="cancel">Cancel</v-btn>
+    </v-layout>
+
     <v-jumbotron :color="transparent">
       <v-container fill-height>
         <v-layout align-center>
@@ -32,11 +38,6 @@
 
     <v-layout row>
       {{ filteredText }}
-    </v-layout>
-    <v-layout row>
-      <v-btn @click="pause">Pause</v-btn>
-      <v-btn @click="play">Play</v-btn>
-      <v-btn @click="cancel">Cancel</v-btn>
     </v-layout>
 
     <div class="root" v-if="allImgFiles.length > 0">
@@ -220,6 +221,7 @@
 <style scoped type="text/scss" lang="scss">
   // TODO - Move styles to separate file
   @import url(https://fonts.googleapis.com/css?family=Montserrat:400,700);
+
   *,
   *:before,
   *:after {
@@ -256,6 +258,7 @@
      * cursor: pointer
      * background: #f5f5f5 */
   }
+
   .drop .cont {
     width: 500px;
     height: 170px;
@@ -270,18 +273,22 @@
     bottom: 0;
     right: 0;
   }
+
   .drop .cont i {
     font-size: 400%;
     color: #8E99A5;
     position: relative;
   }
+
   .drop .cont .tit {
     font-size: 400%;
     text-transform: uppercase;
   }
+
   .drop .cont .desc {
     color: #A4AEBB;
   }
+
   .drop .cont .browse {
     margin: 10px 25%;
     color: white;
@@ -289,6 +296,7 @@
     border-radius: 5px;
     background: #09f;
   }
+
   .drop input {
     width: 100%;
     height: 100%;
@@ -302,6 +310,7 @@
     bottom: 0;
     right: 0;
   }
+
   .drop .thumb {
     height: 75px;
     border: 1px solid #323a44;
