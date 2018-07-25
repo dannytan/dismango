@@ -1,27 +1,35 @@
 <template>
   <v-container fluid>
     <!--<h1>TiSK</h1>-->
-    <v-layout row>
-        <div class="drop">
-          <div class="cont">
-            <!--<v-icon>cloud_upload</v-icon>-->
-            <div class="tit">
-              Drag & Drop
+    
+    <v-jumbotron :color="transparent">
+      <v-container fill-height>
+        <v-layout align-center>
+          <v-flex text-xs-center>
+            <div class="drop">
+              <div class="cont">
+                <!--<v-icon>cloud_upload</v-icon>-->
+                <div class="tit">
+                  Drag & Drop
+                </div>
+                <div class="desc">
+                  your files to Assets, or
+                </div>
+                <div class="browse">
+                  click here to browse
+                </div>
+              </div>
+              <input id="files"
+                     multiple="true"
+                     type="file"
+                     accept="image/*"
+                     @change="processImages"/>
             </div>
-            <div class="desc">
-              your files to Assets, or
-            </div>
-            <div class="browse">
-              click here to browse
-            </div>
-          </div>
-          <input id="files"
-                 multiple="true"
-                 type="file"
-                 accept="image/*"
-                 @change="processImages"/>
-        </div>
-    </v-layout>
+          </v-flex>
+        </v-layout>
+      </v-container>
+    </v-jumbotron>
+
     <v-layout row>
       {{ filteredText }}
     </v-layout>
@@ -220,21 +228,6 @@
     box-sizing: border-box;
   }
 
-  body,
-  html {
-    font-family: "Montserrat", sans-serif;
-    font-size: 100%;
-    font-weight: 400;
-    background: white;
-    color: #323a44;
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-
   input:focus,
   select:focus,
   textarea:focus,
@@ -243,8 +236,8 @@
   }
 
   .drop {
-    width: 95%;
-    height: 50%;
+    width: 100%;
+    height: 100%;
     border: 3px dashed #DADFE3;
     border-radius: 15px;
     overflow: hidden;
@@ -253,7 +246,7 @@
     -webkit-transition: all 0.5s ease-out;
     -moz-transition: all 0.5s ease-out;
     transition: all 0.5s ease-out;
-    margin: 50px auto;
+    margin: auto;
     position: absolute;
     top: 0;
     left: 0;
