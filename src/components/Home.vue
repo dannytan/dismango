@@ -3,10 +3,18 @@
     <!--<h1>TiSK</h1>-->
 
     <v-layout row justify-center>
-      <v-btn @click="read">Read</v-btn>
-      <v-btn @click="pause">Pause</v-btn>
-      <v-btn @click="play">Play</v-btn>
-      <v-btn @click="cancel">Cancel</v-btn>
+      <v-btn fab dark large @click="read" class="read-btn">
+        <v-icon dark x-large color="white">play_arrow</v-icon>
+      </v-btn>
+      <v-btn fab dark large @click="pause" class="pause-btn">
+        <v-icon dark x-large>pause</v-icon>
+      </v-btn>
+      <v-btn fab dark large @click="play" class="play-btn">
+        <v-icon dark x-large>play_arrow</v-icon>
+      </v-btn>
+      <v-btn fab dark large @click="cancel" class="cancel-btn">
+        <v-icon dark x-large>stop</v-icon>
+      </v-btn>
     </v-layout>
 
     <v-jumbotron>
@@ -335,6 +343,31 @@ class="file-item"><v-list-tile-content><v-list-tile-title v-text="item"></v-list
   }
   div.file-item {
     border: 1px solid #DADFE3;
+  }
+
+
+  // Action Button Styles
+  button.read-btn {
+    z-index: 10;
+    background: #fa183d;
+  }
+  button.read-btn:before {
+    background: #fa183d;
+    animation: pulse-border 1500ms ease-out infinite;
+  }
+  button.read-btn:after {
+    background: #ba1f24;
+    transition: all 200ms;
+  }
+  @keyframes pulse-border {
+    0% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1.3);
+      opacity: 0;
+    }
   }
 
 </style>
