@@ -242,8 +242,8 @@ class="file-item"><v-list-tile-content><v-list-tile-title v-text="item"></v-list
   }
 
   .drop {
-    width: 100%;
-    height: 100%;
+    width: 55%;
+    height: 90%;
     border: 3px dashed #DADFE3;
     border-radius: 15px;
     overflow: hidden;
