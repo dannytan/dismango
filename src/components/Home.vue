@@ -3,6 +3,7 @@
     <!--<h1>TiSK</h1>-->
 
     <v-layout row justify-center>
+      <v-btn @click="read">Read</v-btn>
       <v-btn @click="pause">Pause</v-btn>
       <v-btn @click="play">Play</v-btn>
       <v-btn @click="cancel">Cancel</v-btn>
@@ -159,9 +160,8 @@ class="file-item"><v-list-tile-content><v-list-tile-title v-text="item"></v-list
         } else {
             this.data.requests = null;
         }
-        
-        // TODO - Uncomment to run conversion
-        //this.convertToText();
+
+        this.convertToText();
       },
       listenForSpeechEvents () {
         this.utterThis.onstart = () => {
@@ -177,6 +177,8 @@ class="file-item"><v-list-tile-content><v-list-tile-title v-text="item"></v-list
       },
       read() {
         //console.log("Rate: " + this.utterThis.rate + ", Pitch: " + this.utterThis.pitch);
+        console.log("read");
+        this.buildRequests(this.allImgFiles);
         this.utterThis.text = this.filteredText;
         this.utterThis.voice = this.voiceList[this.selectedVoice];
         this.synth.speak(this.utterThis);
@@ -210,16 +212,6 @@ class="file-item"><v-list-tile-content><v-list-tile-title v-text="item"></v-list
       };
 
       this.listenForSpeechEvents();
-    },
-    watch: {
-      allImgFiles() {
-        this.buildRequests(this.allImgFiles);
-      },
-      filteredText() {
-        if (this.filteredText) {
-          this.read();
-        }
-      }
     }
   }
 
