@@ -1,28 +1,79 @@
 <template>
   <v-container fluid>
     <!--<h1>TiSK</h1>-->
-    <v-layout row>
-      <input type="file"
-             ref="image"
-             accept="image/*"
-             multiple="true"
-             @change="processImages"/>
-    </v-layout>
-    <v-layout row>
-      {{ filteredText }}
-    </v-layout>
-    <v-layout row>
+
+    <v-layout row justify-center>
+      <v-btn @click="read">Read</v-btn>
       <v-btn @click="pause">Pause</v-btn>
       <v-btn @click="play">Play</v-btn>
       <v-btn @click="cancel">Cancel</v-btn>
+    </v-layout>
+
+    <v-jumbotron>
+      <v-container fill-height>
+        <v-layout align-center>
+          <v-flex text-xs-center>
+            <div class="drop">
+              <div class="cont">
+                <v-icon>cloud_upload</v-icon>
+                <div class="tit">
+                  Drag & Drop
+                </div>
+                <div class="desc">
+                  your files, or
+                </div>
+                <div class="browse">
+                  click here to browse
+                </div>
+              </div>
+              <input id="files"
+                     multiple="true"
+                     type="file"
+                     accept="image/*"
+                     @change="processImages"/>
+            </div>
+          </v-flex>
+        </v-layout>
+      </v-container>
+    </v-jumbotron>
+
+    <v-layout row>
+      {{ filteredText }}
+    </v-layout>
+
+    <v-layout justify-center>
+      <div v-if="allImgFiles.length > 0" class="list-wrapper">
+        <v-btn block color="red darken-1" class="clear-btn" @click="clearList">Clear</v-btn>
+        <SortableList lockAxis="y" v-model="allImgFiles">
+          <SortableItem v-for="(file, index) in allImgFiles" :index="index" :key="index"
+                        :item="file.name"></SortableItem>
+        </SortableList>
+      </div>
     </v-layout>
   </v-container>
 </template>
 
 <script>
   import axios from 'axios'
+  import {ContainerMixin, ElementMixin} from 'vue-slicksort';
+
+  const SortableList = {
+    mixins: [ContainerMixin],
+    template: `<v-list class="file-list"><slot /></v-list>`,
+  };
+
+  const SortableItem = {
+    mixins: [ElementMixin],
+    props: ['item'],
+    template: `<v-list-tile
+class="file-item"><v-list-tile-content><v-list-tile-title v-text="item"></v-list-tile-title></v-list-tile-content></v-list-tile>`,
+  };
 
   export default {
+    components: {
+      SortableList,
+      SortableItem
+    },
     data() {
       return {
         result: null,
@@ -39,7 +90,7 @@
         base64: null,
         allImgFiles: [],
         convertedText: '',
-        filteredText: null
+        filteredText: null,
       }
     },
     methods: {
@@ -74,7 +125,7 @@
               this.data.requests.push(request);
 
               if (imgFiles.length === files.length) {
-                this.allImgFiles = imgFiles;
+                this.allImgFiles = this.allImgFiles.concat(imgFiles);
               }
             }
           }
@@ -103,12 +154,15 @@
         }
       },
       buildRequests(images) {
-        for (let i = 0; i < images.length; i++) {
-          this.data.requests[i].image.content = images[i].base64;
+        if(images){
+          for (let i = 0; i < images.length; i++) {
+            this.data.requests[i].image.content = images[i].base64;
+          }
+        } else {
+            this.data.requests = null;
         }
 
-        // TODO - Uncomment to run conversion
-        //this.convertToText();
+        this.convertToText();
       },
       listenForSpeechEvents () {
         this.utterThis.onstart = () => {
@@ -124,6 +178,8 @@
       },
       read() {
         //console.log("Rate: " + this.utterThis.rate + ", Pitch: " + this.utterThis.pitch);
+        console.log("read");
+        this.buildRequests(this.allImgFiles);
         this.utterThis.text = this.filteredText;
         this.utterThis.voice = this.voiceList[this.selectedVoice];
         this.synth.speak(this.utterThis);
@@ -141,6 +197,10 @@
         this.synth.cancel();
         this.result = null;
       },
+      clearList() {
+          this.allImgFiles = [];
+          this.data.requests = [];
+      }
     },
     mounted () {
       //speechSynthesis.speak(new SpeechSynthesisUtterance("Check check one two."));
@@ -157,21 +217,124 @@
       };
 
       this.listenForSpeechEvents();
-    },
-    watch: {
-      allImgFiles() {
-        this.buildRequests(this.allImgFiles);
-      },
-      filteredText() {
-        if (this.filteredText) {
-          this.read();
-        }
-      }
     }
   }
 
 </script>
 
 <style scoped type="text/scss" lang="scss">
+  // TODO - Move styles to separate file
+  @import url(https://fonts.googleapis.com/css?family=Montserrat:400,700);
+
+  *,
+  *:before,
+  *:after {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+  }
+
+  input:focus,
+  select:focus,
+  textarea:focus,
+  button:focus {
+    outline: none;
+  }
+
+  .drop {
+    width: 55%;
+    height: 90%;
+    border: 3px dashed #DADFE3;
+    border-radius: 15px;
+    overflow: hidden;
+    text-align: center;
+    background: white;
+    -webkit-transition: all 0.5s ease-out;
+    -moz-transition: all 0.5s ease-out;
+    transition: all 0.5s ease-out;
+    margin: auto;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    /*&:hover
+     * cursor: pointer
+     * background: #f5f5f5 */
+  }
+
+  .drop .cont {
+    width: 500px;
+    height: 230px;
+    color: #8E99A5;
+    -webkit-transition: all 0.5s ease-out;
+    -moz-transition: all 0.5s ease-out;
+    transition: all 0.5s ease-out;
+    margin: auto;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+  }
+
+  .drop .cont i {
+    font-size: 500%;
+    position: relative;
+    color: #13546C;
+  }
+
+  .drop .cont .tit {
+    font-size: 400%;
+    text-transform: uppercase;
+  }
+
+  .drop .cont .desc {
+    color: #A4AEBB;
+  }
+
+  .drop .cont .browse {
+    margin: 10px 25%;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 5px;
+    background: #13546C;
+  }
+
+  .drop input {
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    background: red;
+    opacity: 0;
+    margin: auto;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+  }
+
+  .drop .thumb {
+    height: 75px;
+    border: 1px solid #323a44;
+    margin: 10px 5px 0 0;
+  }
+
+
+  // File List Styles
+  div.list-wrapper {
+    margin-top: 30px;
+  }
+  button.clear-btn {
+    color: white;
+    margin: 0;
+  }
+  div.v-list.file-list {
+    padding: 0;
+  }
+  div.file-item {
+    border: 1px solid #DADFE3;
+  }
 
 </style>
