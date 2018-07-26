@@ -42,7 +42,8 @@
     </v-layout>
 
     <v-layout justify-center>
-      <div v-if="allImgFiles.length > 0">
+      <div v-if="allImgFiles.length > 0" class="list-wrapper">
+        <v-btn block color="red darken-1" class="clear-btn" @click="clearList">Clear</v-btn>
         <SortableList lockAxis="y" v-model="allImgFiles">
           <SortableItem v-for="(file, index) in allImgFiles" :index="index" :key="index"
                         :item="file.name"></SortableItem>
@@ -196,6 +197,10 @@ class="file-item"><v-list-tile-content><v-list-tile-title v-text="item"></v-list
         this.synth.cancel();
         this.result = null;
       },
+      clearList() {
+          this.allImgFiles = [];
+          this.data.requests = [];
+      }
     },
     mounted () {
       //speechSynthesis.speak(new SpeechSynthesisUtterance("Check check one two."));
@@ -318,9 +323,15 @@ class="file-item"><v-list-tile-content><v-list-tile-title v-text="item"></v-list
 
 
   // File List Styles
+  div.list-wrapper {
+    margin-top: 30px;
+  }
+  button.clear-btn {
+    color: white;
+    margin: 0;
+  }
   div.v-list.file-list {
     padding: 0;
-    margin-top: 30px;
   }
   div.file-item {
     border: 1px solid #DADFE3;
