@@ -28,7 +28,7 @@
                   Drag & Drop
                 </div>
                 <div class="desc">
-                  your files, or
+                  your image files, or
                 </div>
                 <div class="browse">
                   click here to browse
