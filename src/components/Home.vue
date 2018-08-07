@@ -50,7 +50,7 @@
       </v-btn>
     </v-layout>
 
-    <v-layout row>
+    <v-layout row style="color: white">
       {{ filteredText }}
     </v-layout>
 
@@ -148,7 +148,6 @@ class="file-item"><v-list-tile-content><v-list-tile-title v-text="item"></v-list
           }
         }
       },
-      // TODO - Check order of processing with multiple files.
       convertToText() {
         axios.post(
           `https://vision.googleapis.com/v1/images:annotate?key=${this.apiKey}`,
@@ -197,11 +196,15 @@ class="file-item"><v-list-tile-content><v-list-tile-title v-text="item"></v-list
         //console.log("Rate: " + this.utterThis.rate + ", Pitch: " + this.utterThis.pitch);
         console.log("read");
         this.buildRequests(this.allImgFiles);
-        this.utterThis.text = this.filteredText;
-        this.utterThis.voice = this.voiceList[this.selectedVoice];
-        this.synth.speak(this.utterThis);
-        this.uploadedState = false;
-        this.playingState = true;
+      },
+      speak() {
+        if (this.filteredText) {
+          this.utterThis.text = this.filteredText;
+          this.utterThis.voice = this.voiceList[this.selectedVoice];
+          this.synth.speak(this.utterThis);
+          this.uploadedState = false;
+          this.playingState = true;
+        }
       },
       pause() {
         console.log("paused");
@@ -222,6 +225,7 @@ class="file-item"><v-list-tile-content><v-list-tile-title v-text="item"></v-list
         this.playingState = false;
         this.pausedState = false;
         this.clearList();
+        this.filteredText = null;
       },
       clearList() {
           this.allImgFiles = [];
@@ -247,6 +251,9 @@ class="file-item"><v-list-tile-content><v-list-tile-title v-text="item"></v-list
     watch: {
         allImgFiles: function() {
             this.allImgFiles.length > 0 ? this.uploadedState = true : this.uploadedState = false;
+        },
+        filteredText: function() {
+            this.speak();
         }
     }
   }
