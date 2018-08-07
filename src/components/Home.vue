@@ -2,21 +2,6 @@
   <v-container fluid>
     <!--<h1>TiSK</h1>-->
 
-    <v-layout row justify-center>
-      <v-btn fab dark large @click="read" class="read-btn" v-if="uploadedState">
-        <v-icon dark x-large color="white">play_arrow</v-icon>
-      </v-btn>
-      <v-btn fab dark large @click="pause" class="pause-btn" v-if="playingState">
-        <v-icon dark x-large>pause</v-icon>
-      </v-btn>
-      <v-btn fab dark large @click="play" class="play-btn" v-if="pausedState">
-        <v-icon dark x-large>play_arrow</v-icon>
-      </v-btn>
-      <v-btn fab dark large @click="stop" class="cancel-btn" v-if="playingState || pausedState">
-        <v-icon dark x-large>stop</v-icon>
-      </v-btn>
-    </v-layout>
-
     <v-jumbotron>
       <v-container fill-height>
         <v-layout align-center>
@@ -44,6 +29,26 @@
         </v-layout>
       </v-container>
     </v-jumbotron>
+
+    <v-layout row justify-center v-if="!uploadedState && !playingState && !pausedState">
+      <p class="file-warning-text">This application currently supports image files only. If you want to upload a pdf file, please convert the
+        file to image(s) by clicking <a href="https://pdftoimage.com/" target="_blank">here</a>.</p>
+    </v-layout>
+
+    <v-layout row justify-center>
+      <v-btn fab dark large @click="read" class="read-btn" v-if="uploadedState">
+        <v-icon dark x-large color="white">play_arrow</v-icon>
+      </v-btn>
+      <v-btn fab dark large @click="pause" class="pause-btn" v-if="playingState">
+        <v-icon dark x-large>pause</v-icon>
+      </v-btn>
+      <v-btn fab dark large @click="play" class="play-btn" v-if="pausedState">
+        <v-icon dark x-large>play_arrow</v-icon>
+      </v-btn>
+      <v-btn fab dark large @click="stop" class="cancel-btn" v-if="playingState || pausedState">
+        <v-icon dark x-large>stop</v-icon>
+      </v-btn>
+    </v-layout>
 
     <v-layout row>
       {{ filteredText }}
@@ -270,11 +275,11 @@ class="file-item"><v-list-tile-content><v-list-tile-title v-text="item"></v-list
   .drop {
     width: 55%;
     height: 90%;
-    border: 3px dashed #DADFE3;
+    border: 3px dashed #ffffff;
     border-radius: 15px;
     overflow: hidden;
     text-align: center;
-    background: white;
+    background: transparent;
     -webkit-transition: all 0.5s ease-out;
     -moz-transition: all 0.5s ease-out;
     transition: all 0.5s ease-out;
@@ -292,7 +297,7 @@ class="file-item"><v-list-tile-content><v-list-tile-title v-text="item"></v-list
   .drop .cont {
     width: 500px;
     height: 230px;
-    color: #8E99A5;
+    color: #ffffff;
     -webkit-transition: all 0.5s ease-out;
     -moz-transition: all 0.5s ease-out;
     transition: all 0.5s ease-out;
@@ -307,7 +312,7 @@ class="file-item"><v-list-tile-content><v-list-tile-title v-text="item"></v-list
   .drop .cont i {
     font-size: 500%;
     position: relative;
-    color: #13546C;
+    color: #ffffff;
   }
 
   .drop .cont .tit {
@@ -316,15 +321,15 @@ class="file-item"><v-list-tile-content><v-list-tile-title v-text="item"></v-list
   }
 
   .drop .cont .desc {
-    color: #A4AEBB;
+    color: #ffffff;
   }
 
   .drop .cont .browse {
     margin: 10px 25%;
-    color: white;
+    color: #ff5f6d;
     padding: 8px 16px;
     border-radius: 5px;
-    background: #13546C;
+    background: #ffffff;
   }
 
   .drop input {
@@ -385,6 +390,18 @@ class="file-item"><v-list-tile-content><v-list-tile-title v-text="item"></v-list
     100% {
       transform: scale(1.3);
       opacity: 0;
+    }
+  }
+
+
+  // Misc Styles
+  .file-warning-text {
+    text-align: center;
+    width: 55%;
+    color: #ffffff;
+    font-size: 18px;
+    a {
+      color: #ffffff;
     }
   }
 
