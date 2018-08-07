@@ -3,16 +3,16 @@
     <!--<h1>TiSK</h1>-->
 
     <v-layout row justify-center>
-      <v-btn fab dark large @click="read" class="read-btn">
+      <v-btn fab dark large @click="read" class="read-btn" v-if="uploadedState">
         <v-icon dark x-large color="white">play_arrow</v-icon>
       </v-btn>
-      <v-btn fab dark large @click="pause" class="pause-btn">
+      <v-btn fab dark large @click="pause" class="pause-btn" v-if="playingState">
         <v-icon dark x-large>pause</v-icon>
       </v-btn>
-      <v-btn fab dark large @click="play" class="play-btn">
+      <v-btn fab dark large @click="play" class="play-btn" v-if="pausedState">
         <v-icon dark x-large>play_arrow</v-icon>
       </v-btn>
-      <v-btn fab dark large @click="cancel" class="cancel-btn">
+      <v-btn fab dark large @click="stop" class="cancel-btn" v-if="playingState || pausedState">
         <v-icon dark x-large>stop</v-icon>
       </v-btn>
     </v-layout>
@@ -99,6 +99,10 @@ class="file-item"><v-list-tile-content><v-list-tile-title v-text="item"></v-list
         allImgFiles: [],
         convertedText: '',
         filteredText: null,
+        // states
+        uploadedState: false,
+        playingState: false,
+        pausedState: false,
       }
     },
     methods: {
@@ -191,19 +195,28 @@ class="file-item"><v-list-tile-content><v-list-tile-title v-text="item"></v-list
         this.utterThis.text = this.filteredText;
         this.utterThis.voice = this.voiceList[this.selectedVoice];
         this.synth.speak(this.utterThis);
+        this.uploadedState = false;
+        this.playingState = true;
       },
       pause() {
         console.log("paused");
         this.synth.pause();
+        this.playingState = false;
+        this.pausedState = true;
       },
       play() {
         console.log("play");
         this.synth.resume();
+        this.pausedState = false;
+        this.playingState = true;
       },
-      cancel() {
+      stop() {
         console.log("cancel");
         this.synth.cancel();
         this.result = null;
+        this.playingState = false;
+        this.pausedState = false;
+        this.clearList();
       },
       clearList() {
           this.allImgFiles = [];
@@ -225,6 +238,11 @@ class="file-item"><v-list-tile-content><v-list-tile-title v-text="item"></v-list
       };
 
       this.listenForSpeechEvents();
+    },
+    watch: {
+        allImgFiles: function() {
+            this.allImgFiles.length > 0 ? this.uploadedState = true : this.uploadedState = false;
+        }
     }
   }
 
