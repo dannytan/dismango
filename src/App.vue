@@ -16,6 +16,7 @@
   #app {
     font-family: 'Avenir', Helvetica, Arial, sans-serif;
     color: #2c3e50;
-    margin-top: 30px;
+    padding-top: 30px;
+    min-height: 100vh;
   }
 </style>

@@ -9,6 +9,16 @@ import 'vuetify/dist/vuetify.min.css'
 Vue.config.productionTip = false
 Vue.use(Vuetify);
 
+Vue.use(Vuetify, {
+  theme: {
+    primary: '#6ed3cf',
+    secondary: '#9068be',
+    accent: '#e62739',
+    light: '#e1e8f0',
+    dark: '#2B303A'
+  }
+});
+
 new Vue({
   el: '#app',
   router,
