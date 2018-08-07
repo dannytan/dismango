@@ -34,19 +34,19 @@
       <p class="file-warning-text">This application currently supports image files only. If you want to upload a pdf file, please convert the
         file to image(s) by clicking <a href="https://pdftoimage.com/" target="_blank">here</a>.</p>
     </v-layout>
-
+    
     <v-layout row justify-center>
-      <v-btn fab dark large @click="read" class="read-btn" v-if="uploadedState">
+      <v-btn fab dark large @click="read" class="red-btn" v-if="uploadedState">
         <v-icon dark x-large color="white">play_arrow</v-icon>
       </v-btn>
-      <v-btn fab dark large @click="pause" class="pause-btn" v-if="playingState">
-        <v-icon dark x-large>pause</v-icon>
+      <v-btn fab dark large @click="pause" v-if="playingState">
+        <v-icon dark x-large color="white">pause</v-icon>
       </v-btn>
-      <v-btn fab dark large @click="play" class="play-btn" v-if="pausedState">
-        <v-icon dark x-large>play_arrow</v-icon>
+      <v-btn fab dark large @click="play" class="red-btn" v-if="pausedState">
+        <v-icon dark x-large color="white">play_arrow</v-icon>
       </v-btn>
-      <v-btn fab dark large @click="stop" class="cancel-btn" v-if="playingState || pausedState">
-        <v-icon dark x-large>stop</v-icon>
+      <v-btn fab dark large @click="stop" v-if="playingState || pausedState">
+        <v-icon dark x-large color="white">stop</v-icon>
       </v-btn>
     </v-layout>
 
@@ -377,15 +377,15 @@ class="file-item"><v-list-tile-content><v-list-tile-title v-text="item"></v-list
 
 
   // Action Button Styles
-  button.read-btn {
+  button.red-btn {
     z-index: 10;
     background: #fa183d;
   }
-  button.read-btn:before {
+  button.red-btn:before {
     background: #fa183d;
     animation: pulse-border 1500ms ease-out infinite;
   }
-  button.read-btn:after {
+  button.red-btn:after {
     background: #ba1f24;
     transition: all 200ms;
   }
