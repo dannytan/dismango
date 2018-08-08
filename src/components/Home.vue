@@ -34,7 +34,7 @@
       <p class="file-warning-text">This application currently supports image files only. If you want to upload a pdf file, please convert the
         file to image(s) by clicking <a href="https://pdftoimage.com/" target="_blank">here</a>.</p>
     </v-layout>
-    
+
     <v-layout row justify-center>
       <v-btn fab dark large @click="read" class="red-btn" v-if="uploadedState">
         <v-icon dark x-large color="white">play_arrow</v-icon>
@@ -54,9 +54,13 @@
       {{ filteredText }}
     </v-layout>
 
+    <v-layout justify-center v-if="allImgFiles.length > 0" class="rearrange-text">
+      <p>Re-arrange by dragging files to desired order.</p>
+    </v-layout>
+
     <v-layout justify-center>
-      <div v-if="allImgFiles.length > 0" class="list-wrapper">
-        <v-btn block color="red darken-1" class="clear-btn" @click="clearList">Clear</v-btn>
+      <div v-if="allImgFiles.length > 0">
+        <v-btn block depressed color="red darken-1" class="clear-btn" @click="clearList">Clear</v-btn>
         <SortableList lockAxis="y" v-model="allImgFiles">
           <SortableItem v-for="(file, index) in allImgFiles" :index="index" :key="index"
                         :item="file.name"></SortableItem>
@@ -204,6 +208,7 @@ class="file-item"><v-list-tile-content><v-list-tile-title v-text="item"></v-list
           this.synth.speak(this.utterThis);
           this.uploadedState = false;
           this.playingState = true;
+          this.clearList();
         }
       },
       pause() {
@@ -224,7 +229,6 @@ class="file-item"><v-list-tile-content><v-list-tile-title v-text="item"></v-list
         this.result = null;
         this.playingState = false;
         this.pausedState = false;
-        this.clearList();
         this.filteredText = null;
       },
       clearList() {
@@ -361,8 +365,13 @@ class="file-item"><v-list-tile-content><v-list-tile-title v-text="item"></v-list
 
 
   // File List Styles
-  div.list-wrapper {
-    margin-top: 30px;
+  div.rearrange-text {
+    margin-top: 20px;
+    p {
+      text-align: center;
+      color: #ffffff;
+      font-size: 16px;
+    }
   }
   button.clear-btn {
     color: white;
@@ -372,7 +381,11 @@ class="file-item"><v-list-tile-content><v-list-tile-title v-text="item"></v-list
     padding: 0;
   }
   div.file-item {
-    border: 1px solid #DADFE3;
+    border-bottom: .5px solid #999;
+    border-left: .5px solid #999;
+    border-right: .5px solid #999;
+    background: #ffffff;
+    color: #777;
   }
 
 
