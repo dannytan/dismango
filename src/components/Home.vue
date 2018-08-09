@@ -1,7 +1,8 @@
 <template>
   <v-container fluid>
-    <!--<h1>TiSK</h1>-->
-
+    <v-layout row justify-center>
+      <img src="../assets/dismango-logo-yellow.png" style="height: 120px">
+    </v-layout>
     <v-jumbotron>
       <v-container fill-height>
         <v-layout align-center>
