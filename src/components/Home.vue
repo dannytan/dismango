@@ -78,8 +78,12 @@
       </v-layout>
     </div>
 
-    <v-layout row style="color: white; margin: 30px 60px;">
-      {{ filteredText }}
+    <v-layout row justify-center v-if="playingState || pausedState">
+      <v-btn depressed class="toggle-text-btn" @click="toggleText">{{showText ? 'Hide' : 'Show'}} Text</v-btn>
+    </v-layout>
+
+    <v-layout row v-if="showText">
+      <p class="filtered-text">{{ filteredText }}</p>
     </v-layout>
   </v-container>
 </template>
@@ -122,6 +126,7 @@ class="file-item"><v-list-tile-content><v-list-tile-title v-text="item"></v-list
         allImgFiles: [],
         convertedText: '',
         filteredText: null,
+        showText: false,
         // states
         uploadedState: false,
         processingState: false,
@@ -251,6 +256,9 @@ class="file-item"><v-list-tile-content><v-list-tile-title v-text="item"></v-list
       clearList() {
           this.allImgFiles = [];
           this.data.requests = [];
+      },
+      toggleText() {
+          this.showText = !this.showText;
       }
     },
     mounted () {
@@ -440,6 +448,18 @@ class="file-item"><v-list-tile-content><v-list-tile-title v-text="item"></v-list
     a {
       color: #ffffff;
     }
+  }
+  .filtered-text {
+    color: white;
+    margin: 20px 80px 40px 80px;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  .toggle-text-btn {
+    color: #ff5f6d;
+    border-radius: 5px;
+    background: #ffffff;
+    margin-top: 20px;
   }
 
 </style>
