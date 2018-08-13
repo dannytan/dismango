@@ -183,7 +183,7 @@ class="file-item"><v-list-tile-content><v-list-tile-title v-text="item"></v-list
             }
             this.filteredText = this.filterText(this.convertedText);
           } else {
-              alert('No text detected in this image');
+              alert('No text was detected in image(s)');
               this.clearList();
           }
           this.processingState = false;
