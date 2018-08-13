@@ -176,12 +176,18 @@ class="file-item"><v-list-tile-content><v-list-tile-title v-text="item"></v-list
         axios.post(
           `https://vision.googleapis.com/v1/images:annotate?key=${this.apiKey}`,
           this.data).then(response => {
-          this.result = response.data.responses;
-          for (let i = 0; i < this.result.length; i++) {
-            this.convertedText += this.result[i].textAnnotations[0].description + " ";
+          if (response.data.responses[0].fullTextAnnotation) {
+            this.result = response.data.responses;
+            for (let i = 0; i < this.result.length; i++) {
+              this.convertedText += this.result[i].textAnnotations[0].description + " ";
+            }
+            this.filteredText = this.filterText(this.convertedText);
+          } else {
+              alert('No text detected in this image');
+              this.clearList();
           }
-          this.filteredText = this.filterText(this.convertedText);
           this.processingState = false;
+
         }).catch(error => {
           console.error(error);
         })
