@@ -1,3 +1,5 @@
+// To deploy, run 'npm run build' followed by a 'firebase deploy'
+
 <template>
   <div id="app">
 ]    <router-view></router-view>
