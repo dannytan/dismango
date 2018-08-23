@@ -1,27 +1,14 @@
 <template>
   <v-container fluid>
-    <!--<h1>TiSK</h1>-->
-
     <v-layout row justify-center>
-      <v-btn fab dark large @click="read" class="read-btn" v-if="uploadedState">
-        <v-icon dark x-large color="white">play_arrow</v-icon>
-      </v-btn>
-      <v-btn fab dark large @click="pause" class="pause-btn" v-if="playingState">
-        <v-icon dark x-large>pause</v-icon>
-      </v-btn>
-      <v-btn fab dark large @click="play" class="play-btn" v-if="pausedState">
-        <v-icon dark x-large>play_arrow</v-icon>
-      </v-btn>
-      <v-btn fab dark large @click="stop" class="cancel-btn" v-if="playingState || pausedState">
-        <v-icon dark x-large>stop</v-icon>
-      </v-btn>
+      <img src="../assets/dismango-logo-yellow.png" style="height: 120px">
     </v-layout>
 
-    <v-jumbotron>
+    <v-jumbotron v-if="!playingState && !pausedState">
       <v-container fill-height>
         <v-layout align-center>
           <v-flex text-xs-center>
-            <div class="drop">
+            <div class="drop" v-if="!processingState">
               <div class="cont">
                 <v-icon>cloud_upload</v-icon>
                 <div class="tit">
@@ -40,23 +27,63 @@
                      accept="image/*"
                      @change="processImages"/>
             </div>
+            <v-progress-circular
+              :size="240"
+              :width="5"
+              color="white"
+              indeterminate
+              v-if="processingState"
+            ></v-progress-circular>
           </v-flex>
         </v-layout>
       </v-container>
     </v-jumbotron>
 
-    <v-layout row>
-      {{ filteredText }}
+    <v-layout row justify-center v-if="!uploadedState && !processingState && !playingState && !pausedState">
+      <p class="file-warning-text">This application currently supports image files only. If you want to upload a pdf file, please convert the
+        file to image(s) by clicking <a href="https://pdftoimage.com/" target="_blank">here</a>.</p>
     </v-layout>
 
-    <v-layout justify-center>
-      <div v-if="allImgFiles.length > 0" class="list-wrapper">
-        <v-btn block color="red darken-1" class="clear-btn" @click="clearList">Clear</v-btn>
-        <SortableList lockAxis="y" v-model="allImgFiles">
-          <SortableItem v-for="(file, index) in allImgFiles" :index="index" :key="index"
-                        :item="file.name"></SortableItem>
-        </SortableList>
-      </div>
+    <v-layout row justify-center v-if="processingState">
+      <p class="file-warning-text">Processing images...</p>
+    </v-layout>
+
+    <v-layout row justify-center>
+      <v-btn fab dark large @click="read" class="red-btn" v-if="uploadedState">
+        <v-icon dark x-large color="white">play_arrow</v-icon>
+      </v-btn>
+      <v-btn fab dark large @click="pause" v-if="playingState">
+        <v-icon dark x-large color="white">pause</v-icon>
+      </v-btn>
+      <v-btn fab dark large @click="play" v-if="pausedState">
+        <v-icon dark x-large color="white">play_arrow</v-icon>
+      </v-btn>
+      <v-btn fab dark large @click="stop" v-if="playingState || pausedState">
+        <v-icon dark x-large color="white">stop</v-icon>
+      </v-btn>
+    </v-layout>
+
+    <div v-if="!processingState && !playingState && !pausedState">
+      <v-layout justify-center v-if="allImgFiles.length > 0" class="rearrange-text">
+        <p>Re-arrange by dragging files to desired order.</p>
+      </v-layout>
+      <v-layout justify-center>
+        <div v-if="allImgFiles.length > 0">
+          <v-btn block depressed color="red darken-1" class="clear-btn" @click="clearList">Clear</v-btn>
+          <SortableList lockAxis="y" v-model="allImgFiles">
+            <SortableItem v-for="(file, index) in allImgFiles" :index="index" :key="index"
+                          :item="file.name"></SortableItem>
+          </SortableList>
+        </div>
+      </v-layout>
+    </div>
+
+    <v-layout row justify-center v-if="playingState || pausedState">
+      <v-btn depressed class="toggle-text-btn" @click="toggleText">{{showText ? 'Hide' : 'Show'}} Text</v-btn>
+    </v-layout>
+
+    <v-layout row v-if="showText">
+      <p class="filtered-text">{{ filteredText }}</p>
     </v-layout>
   </v-container>
 </template>
@@ -99,8 +126,10 @@ class="file-item"><v-list-tile-content><v-list-tile-title v-text="item"></v-list
         allImgFiles: [],
         convertedText: '',
         filteredText: null,
+        showText: false,
         // states
         uploadedState: false,
+        processingState: false,
         playingState: false,
         pausedState: false,
       }
@@ -143,16 +172,22 @@ class="file-item"><v-list-tile-content><v-list-tile-title v-text="item"></v-list
           }
         }
       },
-      // TODO - Check order of processing with multiple files.
       convertToText() {
         axios.post(
           `https://vision.googleapis.com/v1/images:annotate?key=${this.apiKey}`,
           this.data).then(response => {
-          this.result = response.data.responses;
-          for (let i = 0; i < this.result.length; i++) {
-            this.convertedText += this.result[i].textAnnotations[0].description + " ";
+          if (response.data.responses[0].fullTextAnnotation) {
+            this.result = response.data.responses;
+            for (let i = 0; i < this.result.length; i++) {
+              this.convertedText += this.result[i].textAnnotations[0].description + " ";
+            }
+            this.filteredText = this.filterText(this.convertedText);
+          } else {
+              alert('No text was detected in image(s)');
+              this.clearList();
           }
-          this.filteredText = this.filterText(this.convertedText);
+          this.processingState = false;
+
         }).catch(error => {
           console.error(error);
         })
@@ -191,12 +226,18 @@ class="file-item"><v-list-tile-content><v-list-tile-title v-text="item"></v-list
       read() {
         //console.log("Rate: " + this.utterThis.rate + ", Pitch: " + this.utterThis.pitch);
         console.log("read");
-        this.buildRequests(this.allImgFiles);
-        this.utterThis.text = this.filteredText;
-        this.utterThis.voice = this.voiceList[this.selectedVoice];
-        this.synth.speak(this.utterThis);
         this.uploadedState = false;
-        this.playingState = true;
+        this.processingState = true;
+        this.buildRequests(this.allImgFiles);
+      },
+      speak() {
+        if (this.filteredText) {
+          this.utterThis.text = this.filteredText;
+          this.utterThis.voice = this.voiceList[this.selectedVoice];
+          this.playingState = true;
+          this.synth.speak(this.utterThis);
+          this.clearList();
+        }
       },
       pause() {
         console.log("paused");
@@ -216,11 +257,14 @@ class="file-item"><v-list-tile-content><v-list-tile-title v-text="item"></v-list
         this.result = null;
         this.playingState = false;
         this.pausedState = false;
-        this.clearList();
+        this.filteredText = null;
       },
       clearList() {
           this.allImgFiles = [];
           this.data.requests = [];
+      },
+      toggleText() {
+          this.showText = !this.showText;
       }
     },
     mounted () {
@@ -242,6 +286,9 @@ class="file-item"><v-list-tile-content><v-list-tile-title v-text="item"></v-list
     watch: {
         allImgFiles: function() {
             this.allImgFiles.length > 0 ? this.uploadedState = true : this.uploadedState = false;
+        },
+        filteredText: function() {
+            this.speak();
         }
     }
   }
@@ -270,11 +317,11 @@ class="file-item"><v-list-tile-content><v-list-tile-title v-text="item"></v-list
   .drop {
     width: 55%;
     height: 90%;
-    border: 3px dashed #DADFE3;
+    border: 3px dashed #ffffff;
     border-radius: 15px;
     overflow: hidden;
     text-align: center;
-    background: white;
+    background: transparent;
     -webkit-transition: all 0.5s ease-out;
     -moz-transition: all 0.5s ease-out;
     transition: all 0.5s ease-out;
@@ -292,7 +339,7 @@ class="file-item"><v-list-tile-content><v-list-tile-title v-text="item"></v-list
   .drop .cont {
     width: 500px;
     height: 230px;
-    color: #8E99A5;
+    color: #ffffff;
     -webkit-transition: all 0.5s ease-out;
     -moz-transition: all 0.5s ease-out;
     transition: all 0.5s ease-out;
@@ -307,7 +354,7 @@ class="file-item"><v-list-tile-content><v-list-tile-title v-text="item"></v-list
   .drop .cont i {
     font-size: 500%;
     position: relative;
-    color: #13546C;
+    color: #ffffff;
   }
 
   .drop .cont .tit {
@@ -316,15 +363,15 @@ class="file-item"><v-list-tile-content><v-list-tile-title v-text="item"></v-list
   }
 
   .drop .cont .desc {
-    color: #A4AEBB;
+    color: #ffffff;
   }
 
   .drop .cont .browse {
     margin: 10px 25%;
-    color: white;
+    color: #ff5f6d;
     padding: 8px 16px;
     border-radius: 5px;
-    background: #13546C;
+    background: #ffffff;
   }
 
   .drop input {
@@ -349,8 +396,13 @@ class="file-item"><v-list-tile-content><v-list-tile-title v-text="item"></v-list
 
 
   // File List Styles
-  div.list-wrapper {
-    margin-top: 30px;
+  div.rearrange-text {
+    margin-top: 20px;
+    p {
+      text-align: center;
+      color: #ffffff;
+      font-size: 16px;
+    }
   }
   button.clear-btn {
     color: white;
@@ -360,20 +412,24 @@ class="file-item"><v-list-tile-content><v-list-tile-title v-text="item"></v-list
     padding: 0;
   }
   div.file-item {
-    border: 1px solid #DADFE3;
+    border-bottom: .5px solid #999;
+    border-left: .5px solid #999;
+    border-right: .5px solid #999;
+    background: #ffffff;
+    color: #777;
   }
 
 
   // Action Button Styles
-  button.read-btn {
+  button.red-btn {
     z-index: 10;
     background: #fa183d;
   }
-  button.read-btn:before {
+  button.red-btn:before {
     background: #fa183d;
     animation: pulse-border 1500ms ease-out infinite;
   }
-  button.read-btn:after {
+  button.red-btn:after {
     background: #ba1f24;
     transition: all 200ms;
   }
@@ -386,6 +442,30 @@ class="file-item"><v-list-tile-content><v-list-tile-title v-text="item"></v-list
       transform: scale(1.3);
       opacity: 0;
     }
+  }
+
+
+  // Misc Styles
+  .file-warning-text {
+    text-align: center;
+    width: 55%;
+    color: #ffffff;
+    font-size: 18px;
+    a {
+      color: #ffffff;
+    }
+  }
+  .filtered-text {
+    color: white;
+    margin: 20px 80px 40px 80px;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  .toggle-text-btn {
+    color: #ff5f6d;
+    border-radius: 5px;
+    background: #ffffff;
+    margin-top: 20px;
   }
 
 </style>
