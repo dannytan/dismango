@@ -1,4 +1,4 @@
-# read-me
+# dismango
 
 > Ever had an image of a document/text that was just too long to read? This app is able to take multiple image files and read it's text out loud so you don't have to. Visit https://dismango.com/ to demo the app!
 
